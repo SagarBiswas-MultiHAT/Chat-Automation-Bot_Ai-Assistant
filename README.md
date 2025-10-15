@@ -1,6 +1,6 @@
 # Chat Automation Bot
 
-![Chat-Automation-Bot](https://scontent.fdac138-2.fna.fbcdn.net/v/t39.30808-6/472029725_122132275670552158_7324699147322623844_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Rra3NHGro-AQ7kNvgETyEui&_nc_zt=23&_nc_ht=scontent.fdac138-2.fna&_nc_gid=AcXOzl_J_wbHQSnFAlrUqme&oh=00_AYDeDJfTcHoO6Q-X1AfBm2XByapH_DiZz2Hbk4U33i6XZg&oe=6778ED8E)
+Vedio: https://www.facebook.com/share/v/1PCci8RnYD/
 
 This repository contains a Python script that automates chat interactions by leveraging PyAutoGUI for UI automation, Pyperclip for clipboard management, and the Groq API for intelligent chat responses. Designed for coders who enjoy a fun, flirty twist while automating mundane chat tasks.
 

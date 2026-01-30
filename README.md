@@ -1,6 +1,6 @@
 # Chat Automation Bot
 
-<div align="enter">
+<div align="center">
 
 ![CI](https://github.com/SagarBiswas-MultiHAT/ChatAutomation-AI-Assistant/actions/workflows/ci.yml/badge.svg)
 

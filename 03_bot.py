@@ -279,8 +279,10 @@ def paste_response(text: str, input_box: list, timing: Dict[str, float]) -> None
 
 
 def run_bot(config: BotConfig, dry_run: bool) -> None:
-  api_key = require_api_key()
-  client = Groq(api_key=api_key)
+  client: Optional[Groq] = None
+  if not dry_run:
+    api_key = require_api_key()
+    client = Groq(api_key=api_key)
 
   logging.info("Starting chat automation")
   if dry_run:
@@ -292,6 +294,9 @@ def run_bot(config: BotConfig, dry_run: bool) -> None:
   last_seen_line = ""
   chat_cycle = config.coords.get("chat_list", [])
   chat_index = 0
+
+  iterations = 1 if dry_run else None
+  current_iteration = 0
 
   while True:
     if not dry_run and chat_cycle:
@@ -327,16 +332,22 @@ def run_bot(config: BotConfig, dry_run: bool) -> None:
       if get_last_sender_marker(raw_lines, config.my_name) == "self":
         logging.info("Last message is yours; skipping reply")
       else:
-        response = generate_response(
-          client,
-          config.model,
-          config.persona,
-          chat_history,
-        )
-        logging.info("Generated response length: %s", len(response))
-
-        if not dry_run:
+        if not dry_run and client is not None:
+          response = generate_response(
+            client,
+            config.model,
+            config.persona,
+            chat_history,
+          )
+          logging.info("Generated response length: %s", len(response))
           paste_response(response, config.coords["input_box"], config.timing)
+        else:
+          logging.info("Dry-run: response generation skipped")
+
+    if iterations is not None:
+      current_iteration += 1
+      if current_iteration >= iterations:
+        break
 
     time.sleep(config.timing["poll_interval"])
 

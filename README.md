@@ -1,109 +1,184 @@
 # Chat Automation Bot
 
-Vedio: https://www.facebook.com/share/v/1PCci8RnYD/
+Video demo: https://www.facebook.com/share/v/1PCci8RnYD/
 
-This repository contains a Python script that automates chat interactions by leveraging PyAutoGUI for UI automation, Pyperclip for clipboard management, and the Groq API for intelligent chat responses. Designed for coders who enjoy a fun, flirty twist while automating mundane chat tasks.
+This project automates chat replies (e.g., Messenger, WhatsApp) using screen automation with PyAutoGUI, clipboard handling via Pyperclip, and AI-generated responses powered by Groq. After starting, the program automatically clicks the chat icon at a predefined screen position, then continuously cycles through multiple chat slots by clicking different coordinates one by one, triggering chat automation scans for each conversation. It scans each chat for new incoming messages, generates and sends appropriate replies, skips responding if the last message was sent by the chatBot, and then moves on to the next chat. Once all configured chat positions are scanned, the process loops back to the first chat, enabling continuous, hands-free monitoring and automated replying across multiple conversations.
 
 ---
 
-## Features
+## What it does (at a glance)
 
-- **Automated UI Interaction:** Uses PyAutoGUI to simulate mouse clicks, drags, and keyboard inputs.
-- **Clipboard Management:** Captures and pastes text seamlessly with Pyperclip.
-- **AI-Powered Responses:** Integrates with the Groq API to generate intelligent, personalized chat responses.
-- **Custom Persona:** Configured to respond as a friendly, flirty coder with a mix of English and Bangla languages.
+- Continuously scans the selected chat area for new messages.
+- Sends AI-generated replies based on your configured persona.
+- Avoids replying if the last sender is “You sent”.
+- Cycles through multiple chat threads in a loop.
+- Logs actions and supports a safe dry-run mode.
 
 ---
 
 ## Requirements
 
 - Python 3.7+
-- Libraries:
-  - `pyautogui`
-  - `pyperclip`
-  - `groq`
+- Dependencies from [requirements.txt](requirements.txt)
+- A Groq API key (environment variable)
 
 ---
 
-## Setup
+## Quick start
 
-1. Clone the repository:
+1. **Clone the repo**
+
    ```bash
-   git clone https://github.com/your-username/chat-automation-bot.git](https://github.com/SagarBiswas-MultiHAT/Chat-Automation-Bot.git
-   cd chat-automation-bot
+   git clone https://github.com/SagarBiswas-MultiHAT/Chat-Automation-Bot.git
+   cd Chat-Automation-Bot
    ```
 
-2. Set up a virtual environment:
+2. **Create & activate a virtual environment**
+
    ```bash
-   python -m venv myenv
-   source myenv/bin/activate  # On Windows, use `myenv\Scripts\activate`
+   python -m venv .venv
+   # Windows
+   .\.venv\Scripts\activate
+   # macOS/Linux
+   source .venv/bin/activate
    ```
 
-3. Install dependencies:
+3. **Install dependencies**
+
    ```bash
-   pip install pyautogui pyperclip groq
+   pip install -r requirements.txt
    ```
 
-4. Add your Groq API key:
-   Replace `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` in the script with your actual API key.
+4. **Set your Groq API key**
 
----
+   PowerShell:
 
-## Usage
+   ```powershell
+   $env:GROQ_API_KEY = "your_groq_key_here"
+   $env:GROQ_MODEL = "llama-3.1-8b-instant"  # optional
+   ```
 
-1. Run the script:
+5. **Create config.json**
+
+   ```bash
+   copy config.example.json config.json
+   ```
+
+6. **Run the bot**
+
    ```bash
    python 03_bot.py
    ```
 
-2. The script will:
-   - Simulate a click on a specific screen position.
-   - Select and copy text from a designated area.
-   - Use the Groq API to analyze chat history and generate a response.
-   - Paste the response into a chat application and press Enter to send it.
+---
+
+## How the bot works (simple explanation)
+
+Every loop it:
+
+1. Clicks the next chat in your list.
+2. Selects the chat area and copies it.
+3. Detects the last sender.
+4. If the last sender is **you**, it does nothing.
+5. If the last sender is **the user**, it generates a reply and sends it.
 
 ---
 
-## How It Works
+## Key behavior rules
 
-- **Step 1:** Simulates a mouse click on the chat icon.
-- **Step 2:** Selects the text area by dragging the cursor.
-- **Step 3:** Copies the selected text to the clipboard.
-- **Step 4:** Sends the text to the Groq API, which generates a chat response.
-- **Step 5:** Pastes the response back into the chat application and sends it.
+- **Never reply when the last message is “You sent”.**
+- **Only reply to new incoming user messages.**
+- **Cycles through multiple chats** each scan.
 
 ---
 
-## Example Scenario
+## Configuration (config.json)
 
-You’re managing a busy chat platform and need quick, intelligent responses without typing manually. This bot:
-- Reads the last message.
-- Crafts a thoughtful response based on your configured persona.
-- Sends the message, saving you time and effort.
+These settings are also embedded in [03_bot.py](03_bot.py), but using config.json is recommended.
+
+**Important fields**
+
+- `coords.chat_icon` — opens the chat list (clicked once at startup).
+- `coords.chat_list` — list of chat positions to cycle through.
+- `coords.select_start` / `coords.select_end` — selection box for chat text.
+- `coords.input_box` — where responses are typed.
+- `timing.poll_interval` — pause between scans.
+- `my_name` — used to recognize your own messages.
+
+Example (trimmed):
+
+```json
+{
+  "coords": {
+    "chat_icon": [617, 1050],
+    "chat_list": [
+      [245, 248],
+      [245, 314],
+      [230, 373]
+    ],
+    "select_start": [523, 183],
+    "select_end": [1397, 1013],
+    "input_box": [600, 1006]
+  },
+  "timing": {
+    "poll_interval": 2.0
+  },
+  "my_name": "You sent"
+}
+```
 
 ---
 
-## Notes
+## How to find correct screen coordinates
 
-- **Accuracy:** Ensure your screen resolution matches the coordinates used in the script.
-- **Custom Persona:** Modify the system message in the Groq API section to tailor the bot’s personality.
-- **Safety:** Use responsibly and in compliance with chat platform rules.
+Use the cursor helper:
+
+```bash
+python 01_get_cursor.py
+```
+
+Move your mouse to the target UI point and copy the coordinates it prints.
+
+---
+
+## Dry run mode (safe testing)
+
+```bash
+python 03_bot.py --dry-run
+```
+
+This runs the detection logic without clicking or typing.
+
+---
+
+## Troubleshooting
+
+- **Bot replies when it shouldn’t:**
+  - Re-check your selection box (`select_start` / `select_end`). It must include the “You sent” marker and recent messages.
+  - Make sure `my_name` matches how your UI labels your messages.
+
+- **Bot does nothing:**
+  - Confirm the chat area is selectable and text is copied correctly.
+  - Verify clipboard permissions and your selection area.
+
+- **Clicks are off:**
+  - Re-capture coordinates using [01_get_cursor.py](01_get_cursor.py).
+
+---
+
+## Safety notes
+
+- PyAutoGUI failsafe is enabled: move the mouse to the top-left corner to stop.
+- Use responsibly and follow the platform’s policies.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. Feel free to use and modify it as you like.
-
----
-
-## Contributing
-
-Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
+MIT License.
 
 ---
 
 ## Contact
 
-For questions or suggestions, feel free to reach out at [eng.sagar.aiub@gmail.com].
-
+For questions or suggestions, email: eng.sagar.aiub@gmail.com

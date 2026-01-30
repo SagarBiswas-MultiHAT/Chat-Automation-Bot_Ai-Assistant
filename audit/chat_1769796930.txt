@@ -1,0 +1,5 @@
+=== CHAT HISTORY ===
+SIMULATED CHAT HISTORY: last message content here.
+
+=== MODEL REPLY ===
+I am ready to assist. You have not sent a last message. Please share content of last message. I will craft a reply.

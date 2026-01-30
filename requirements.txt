@@ -1,0 +1,3 @@
+groq
+pyautogui
+pyperclip
